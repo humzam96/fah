@@ -1,0 +1,25 @@
+<config>
+  <!-- Folding Slot Configuration -->
+  <gpu v='false'/>
+
+  <!-- Slot Control -->
+  <power v='light'/>
+
+  <!-- User Information
+  Visit the link below for a username
+  https://foldingathome.org/support/faq/stats-teams-usernames/
+  -->
+  <user v='EnterYourUserName'/>
+  <!-- Red Hat NAPS Team -->
+  <team v='235533'/>
+  <!-- Visit https://apps.foldingathome.org/getpasskey for a passkey -->
+  <passkey v='EnterYourPassKey'/>
+
+  <!-- Folding Slots -->
+  <slot id='0' type='CPU'/>
+
+  <!-- Grant remote web access to the following IP -->
+  <allow>0/0:7396</allow>
+  <web-allow>0/0:7396</web-allow>
+
+</config>

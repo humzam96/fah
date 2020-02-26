@@ -1,0 +1,2 @@
+#Enter your hostnames and corresponding usernames below
+<hostname> ansible_user=<username>
