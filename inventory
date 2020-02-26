@@ -1,2 +1,5 @@
 #Enter your hostnames and corresponding usernames below
-<hostname> ansible_user=<username>
+# ansibe_sudo_pass is optional if all passwords are the same, 
+# just add -K when running the playbook. 
+# Also a good idea to use ansible-vault if adding passwords
+<hostname> ansible_user=<username> ansibe_sudo_pass=<pass>
