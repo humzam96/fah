@@ -8,7 +8,7 @@
         name: config-fah
         namespace: '{{ ansible_operator_meta.namespace }}'
       data:
-        config.xml: rendered_template
+        config.xml: "{{ rendered_template | b64encode }}"
       type: Opaque
   vars:
     rendered_template: "{{ lookup('template', './config.xml.j2') }}"
