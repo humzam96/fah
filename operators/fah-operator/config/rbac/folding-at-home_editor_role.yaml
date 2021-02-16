@@ -1,0 +1,24 @@
+# permissions for end users to edit folding-at-homes.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: folding-at-home-editor-role
+rules:
+- apiGroups:
+  - fah.rdu2.redhat.com
+  resources:
+  - folding-at-homes
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - fah.rdu2.redhat.com
+  resources:
+  - folding-at-homes/status
+  verbs:
+  - get

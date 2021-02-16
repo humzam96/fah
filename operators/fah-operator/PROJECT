@@ -1,0 +1,8 @@
+domain: rdu2.redhat.com
+layout: ansible.sdk.operatorframework.io/v1
+projectName: fah-operator
+resources:
+- group: fah
+  kind: Folding-at-home
+  version: v1alpha1
+version: 3-alpha

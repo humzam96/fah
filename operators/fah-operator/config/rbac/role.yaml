@@ -1,0 +1,57 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: manager-role
+rules:
+  ##
+  ## Base operator rules
+  ##
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+      - pods
+      - pods/exec
+      - pods/log
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
+      - daemonsets
+      - replicasets
+      - statefulsets
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  ##
+  ## Rules for fah.rdu2.redhat.com/v1alpha1, Kind: Folding-at-home
+  ##
+  - apiGroups:
+      - fah.rdu2.redhat.com
+    resources:
+      - folding-at-homes
+      - folding-at-homes/status
+      - folding-at-homes/finalizers
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+# +kubebuilder:scaffold:rules

@@ -1,0 +1,88 @@
+---
+- name: Quick Docker Install
+  hosts: all
+  become: yes
+  tags: docker
+  vars:
+    pip_install_packages:
+      - name: docker
+  roles:
+    - role: geerlingguy.pip
+    - role: geerlingguy.docker
+
+- name: FAH
+  hosts: all
+  become: yes
+  tasks:
+    - debug:
+        msg: "OS Family: {{ ansible_facts['os_family'] }}, Architecture: {{ ansible_facts['architecture'] }}"
+
+    - name: Copy config.xml
+      copy:
+        src: config.xml
+        dest: /etc/fahclient/config.xml
+
+    - name: Check dpkg
+      shell: dpkg -s https://download.foldingathome.org/releases/public/release/fahclient/debian-stable-64bit/v7.5/latest.deb
+      when: ansible_facts['os_family'] == "Debian"
+      ignore_errors: yes
+      register: dpkg_check
+
+    - name: Install Debian Packages
+      shell: dpkg -i --force-depends https://download.foldingathome.org/releases/public/release/fahclient/debian-stable-64bit/v7.5/latest.deb
+      when: ansible_facts['os_family'] == "Debian" and dpkg_check.rc == 1
+
+    - name: Check if RPM already installed
+      shell: yum -q list installed fahclient
+      args:
+        warn: no
+      register: rpm_check
+      ignore_errors: yes
+      when: ansible_facts['os_family'] == "RedHat"
+
+    - name: Install RPM Packages
+      shell: rpm -i --nodeps https://download.foldingathome.org/releases/public/release/fahclient/centos-5.3-64bit/v7.4/fahclient-7.4.4-1.x86_64.rpm
+      args:
+        warn: no
+      when: ansible_facts['os_family'] == "RedHat" and rpm_check.rc == 1
+
+    - name: Create tmp folder
+      file:
+        dest: /tmp/fah
+        state: directory
+      tags: docker, run
+
+    - name: Copy Dockerfile
+      copy:
+        src: Dockerfile
+        dest: /tmp/fah/Dockerfile
+      tags: docker, run
+
+    - name: Copy Config file
+      copy:
+        src: config.xml
+        dest: /tmp/fah/config.xml
+      tags: docker, run
+
+    - name: Docker Build
+      docker_image:
+        name: fah:latest
+        build:
+          path: /tmp/fah
+        source: build
+      tags: docker, run
+
+    - name: Start Container
+      docker_container:
+        name: fahclient
+        image: fah
+        state: started
+        restart_policy: unless-stopped
+        exposed_ports:
+        - 7396
+      tags: docker, run
+
+
+    - name: Get Links
+      debug:
+        msg: "Web Consoles: {{ ansible_facts['default_ipv4']['address'] }}:7396"

@@ -1,0 +1,54 @@
+---
+- name: Create Config Secret
+  community.kubernetes.k8s:
+    definition:
+      kind: Secret
+      apiVersion: v1
+      metadata:
+        name: config-fah
+        namespace: '{{ ansible_operator_meta.namespace }}'
+      data:
+        config.xml: rendered_template
+      type: Opaque
+  vars:
+    rendered_template: "{{ lookup('template', './config.xml.j2') }}"
+- name: Start Fah
+  community.kubernetes.k8s:
+    definition:
+      kind: Deployment
+      apiVersion: apps/v1
+      metadata:
+        name: '{{ ansible_operator_meta.name }}-fah'
+        namespace: '{{ ansible_operator_meta.namespace }}'
+      spec:
+        replicas: "{{ size }}"
+        selector:
+          matchLabels:
+            app: fah
+        template:
+          metadata:
+            labels:
+              app: fah
+          spec:
+            volumes:
+              - name: secret-volume
+                secret:
+                  secretName: config-fah
+                  defaultMode: 420
+              - name: volume
+                emptyDir: {}
+            containers:
+              - name: fah
+                image: quay.io/humzam96/fah-client:latest
+                ports:
+                  - containerPort: 7396
+                    protocol: TCP
+                  - containerPort: 36330
+                    protocol: TCP
+                resources: {}
+                volumeMounts:
+                  - name: volume
+                    mountPath: /fah
+                  - name: secret-volume
+                    mountPath: /fah/config.xml
+                    subPath: config.xml
